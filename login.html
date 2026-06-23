@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FBF7F0">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="רשימת קניות">
+<title>רשימת קניות</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="login-screen">
+  <div class="login-content">
+    <div class="login-hero">
+      <div class="login-hero-emoji">🛒</div>
+      <h1 class="login-title">רשימת קניות</h1>
+      <p class="login-sub">בחרו את המשפחה שלכם כדי להמשיך</p>
+    </div>
+
+    <div class="family-grid" id="familyList"></div>
+    <div class="app-footer">A.L ייעוץ תכנון והקמת מערכות</div>
+  </div>
+</div>
+
+<div class="modal-backdrop pin-backdrop" id="pinModal">
+  <div class="modal-sheet pin-sheet">
+    <button class="pin-close" id="cancelPin" aria-label="סגירה">✕</button>
+    <div class="pin-emoji" id="pinModalEmoji"></div>
+    <div class="modal-title pin-title" id="pinModalTitle">קוד כניסה</div>
+    <p class="pin-instructions">הקלידו את הקוד בן 4 הספרות</p>
+    <div class="pin-input-row">
+      <input type="tel" inputmode="numeric" maxlength="1" class="pin-digit" data-pin-digit="0">
+      <input type="tel" inputmode="numeric" maxlength="1" class="pin-digit" data-pin-digit="1">
+      <input type="tel" inputmode="numeric" maxlength="1" class="pin-digit" data-pin-digit="2">
+      <input type="tel" inputmode="numeric" maxlength="1" class="pin-digit" data-pin-digit="3">
+    </div>
+    <p class="pin-error" id="pinError" style="display:none;">קוד שגוי, נסו שוב</p>
+  </div>
+</div>
+
+<script src="assets/supabase-client.js"></script>
+<script src="assets/workspaces.js"></script>
+<script src="assets/install-prompt.js"></script>
+<script src="assets/login.js"></script>
+</body>
+</html>

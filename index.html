@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FBF7F0">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="רשימת קניות">
+<title>רשימת קניות</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="topbar" id="topbar">
+  <div class="topbar-title">רשימת קניות<span class="dot">.</span></div>
+  <div class="topbar-actions">
+    <span class="workspace-badge" id="workspaceBadge"></span>
+    <span class="sync-dot" title="מסונכרן"></span>
+    <div class="nav-pill">
+      <a href="index.html" class="active">רשימת קניות</a>
+      <a href="edit.html">עריכת רשימה</a>
+      <a href="history.html">היסטוריה</a>
+      <a href="settings.html" id="settingsNavLink" style="display:none;">הגדרות</a>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="categoriesContainer">
+  <div class="loading-spinner"></div>
+</div>
+
+<div class="app-footer">A.L ייעוץ תכנון והקמת מערכות</div>
+
+<div class="receipt-bar" id="receiptBar" style="display:none;">
+  <div class="receipt-tear"></div>
+  <div class="receipt-content">
+    <div class="receipt-cols">
+      <div class="receipt-col">
+        <div class="receipt-label">צפי רשימה</div>
+        <div class="receipt-amount receipt-amount-secondary" id="receiptTotalAmount">₪0.00</div>
+      </div>
+      <div class="receipt-col">
+        <div class="receipt-label">סכום קניה נוכחית</div>
+        <div class="receipt-amount" id="receiptAmount">₪0.00</div>
+      </div>
+    </div>
+    <button class="finish-btn" id="finishBtn">סיימתי קניה ✓</button>
+  </div>
+  <div class="receipt-sub-row" id="receiptSubRow">
+    <span class="receipt-sub" id="receiptSub">0 מוצרים ברשימה</span>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="finishModal">
+  <div class="modal-sheet">
+    <div class="modal-title">לסיים את הקניה?</div>
+    <p style="color:var(--ink-soft); font-size:14px; line-height:1.6; margin:0 0 16px;" id="finishModalText"></p>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" id="cancelFinish">ביטול</button>
+      <button class="modal-btn primary" id="confirmFinish">סיימתי, אפס לקניה הבאה</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="addProductModal">
+  <div class="modal-sheet">
+    <div class="modal-title">הוספת מוצר ל"<span id="addProductCatName"></span>"</div>
+    <div class="modal-row">
+      <input class="modal-input" id="addProductName" placeholder="שם המוצר" maxlength="60">
+    </div>
+    <div class="modal-row">
+      <input class="modal-input" id="addProductPrice" placeholder="מחיר (₪)" inputmode="decimal">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" id="cancelAddProduct">ביטול</button>
+      <button class="modal-btn primary" id="confirmAddProduct">הוספה לרשימה</button>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox" id="imageLightbox">
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script src="assets/supabase-client.js"></script>
+<script src="assets/workspaces.js"></script>
+<script src="assets/install-prompt.js"></script>
+<script src="assets/shop.js"></script>
+</body>
+</html>

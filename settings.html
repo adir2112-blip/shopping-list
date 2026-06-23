@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FBF7F0">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="רשימת קניות">
+<title>הגדרות</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="topbar" id="topbar">
+  <div class="topbar-title">הגדרות<span class="dot">.</span></div>
+  <div class="topbar-actions">
+    <span class="workspace-badge" id="workspaceBadge"></span>
+    <span class="sync-dot" title="מסונכרן"></span>
+    <div class="nav-pill">
+      <a href="index.html">רשימת קניות</a>
+      <a href="edit.html">עריכת רשימה</a>
+      <a href="history.html">היסטוריה</a>
+      <a href="settings.html" class="active" id="settingsNavLink" style="display:none;">הגדרות</a>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="settingsContainer">
+  <div class="loading-spinner"></div>
+</div>
+
+<!-- Modal: add new family -->
+<div class="modal-backdrop" id="addFamilyModal">
+  <div class="modal-sheet">
+    <div class="modal-title">משפחה חדשה</div>
+    <div class="modal-row">
+      <input class="modal-input" id="newFamilyName" placeholder="שם המשפחה" maxlength="30">
+    </div>
+    <div class="modal-row">
+      <input class="modal-input" id="newFamilyEmoji" placeholder="אימוג'י (לדוגמה 🏡)" maxlength="4">
+    </div>
+    <div class="modal-row">
+      <input class="modal-input" id="newFamilyPin" placeholder="קוד כניסה (4 ספרות)" inputmode="numeric" maxlength="4">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" id="cancelAddFamily">ביטול</button>
+      <button class="modal-btn primary" id="confirmAddFamily">יצירה</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: reset PIN -->
+<div class="modal-backdrop" id="resetPinModal">
+  <div class="modal-sheet">
+    <div class="modal-title" id="resetPinTitle">איפוס קוד כניסה</div>
+    <div class="modal-row">
+      <input class="modal-input" id="resetPinValue" placeholder="קוד חדש (4 ספרות)" inputmode="numeric" maxlength="4">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" id="cancelResetPin">ביטול</button>
+      <button class="modal-btn primary" id="confirmResetPin">שמירה</button>
+    </div>
+  </div>
+</div>
+
+<div class="app-footer">A.L ייעוץ תכנון והקמת מערכות</div>
+
+<script src="assets/supabase-client.js"></script>
+<script src="assets/workspaces.js"></script>
+<script src="assets/install-prompt.js"></script>
+<script src="assets/settings.js"></script>
+</body>
+</html>

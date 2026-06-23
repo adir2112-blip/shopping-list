@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>טעינה ראשונית</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="wrap" style="padding-top:30px;">
+  <h2 style="margin-bottom:14px;">טעינת רשימת המוצרים הראשונית</h2>
+  <p style="color:var(--ink-soft); line-height:1.6; margin-bottom:20px;">
+    דף זה טוען את 11 המחלקות ואת כל המוצרים שסיפקת בפעם הראשונה, ישירות ל-Supabase, למשפחת <strong>אדיר ויקירה</strong> בלבד.<br>
+    <strong>יש להריץ פעם אחת בלבד.</strong> אחרי שזה ירוץ בהצלחה, אפשר למחוק/להתעלם מהדף הזה — עריכות עתידיות יתבצעו דרך לשונית "עריכת רשימה".
+  </p>
+  <button class="finish-btn" id="seedBtn" style="width:100%; padding:16px;">טען את הרשימה ל-Supabase</button>
+  <div id="log" style="margin-top:20px; font-size:14px; color:var(--ink-soft); line-height:1.8; white-space:pre-wrap;"></div>
+</div>
+
+<script src="assets/supabase-client.js"></script>
+<script src="assets/workspaces.js"></script>
+<script src="assets/seed-data.browser.js"></script>
+<script>
+const SEED_WORKSPACE_ID = 'adir'; // הרשימה הראשונית הזו מיועדת תמיד למשפחת אדיר ויקירה
+
+const logEl = document.getElementById('log');
+function log(msg) {
+  logEl.textContent += msg + '\n';
+}
+
+document.getElementById('seedBtn').addEventListener('click', async () => {
+  document.getElementById('seedBtn').disabled = true;
+  log(`בודק אם יש כבר מחלקות קיימות ב-workspace "${SEED_WORKSPACE_ID}"...`);
+
+  const { data: existingCats, error: checkErr } = await supabaseClient
+    .from('categories')
+    .select('id')
+    .eq('workspace_id', SEED_WORKSPACE_ID);
+  if (checkErr) {
+    log('❌ שגיאה בבדיקה: ' + checkErr.message);
+    return;
+  }
+  if (existingCats && existingCats.length > 0) {
+    log('⚠️ נמצאו כבר ' + existingCats.length + ' מחלקות במסד הנתונים.');
+    log('הטעינה הראשונית כבר בוצעה (או יש דאטה קיים). לא ממשיכים כדי לא ליצור כפילויות.');
+    log('אם אתם בטוחים שרוצים לטעון מחדש, מחקו ידנית את הטבלאות ב-Supabase SQL editor לפני כן.');
+    return;
+  }
+
+  let catSort = 0;
+  let totalProducts = 0;
+
+  for (const categoryName of Object.keys(SEED_DATA)) {
+    log(`יוצר מחלקה: ${categoryName}...`);
+    const { data: cat, error: catErr } = await supabaseClient
+      .from('categories')
+      .insert({ name: categoryName, emoji: emojiForCategory(categoryName), sort_order: catSort, workspace_id: SEED_WORKSPACE_ID })
+      .select()
+      .single();
+
+    if (catErr) {
+      log('❌ שגיאה ביצירת מחלקה ' + categoryName + ': ' + catErr.message);
+      continue;
+    }
+
+    const products = SEED_DATA[categoryName];
+    let prodSort = 0;
+    for (const p of products) {
+      const { error: prodErr } = await supabaseClient
+        .from('products')
+        .insert({
+          category_id: cat.id,
+          name: p.name,
+          price: p.price,
+          quantity: 1,
+          sort_order: prodSort,
+          status: 'pending',
+          workspace_id: SEED_WORKSPACE_ID,
+          in_active_list: true,
+        });
+      if (prodErr) {
+        log('  ❌ שגיאה במוצר ' + p.name + ': ' + prodErr.message);
+      } else {
+        totalProducts++;
+      }
+      prodSort++;
+    }
+    log(`  ✓ נוספו ${products.length} מוצרים`);
+    catSort++;
+  }
+
+  log('');
+  log(`🎉 סיום! נוצרו ${catSort} מחלקות ו-${totalProducts} מוצרים.`);
+  log('אפשר לעבור ללשונית "רשימת קניות" או "עריכת רשימה" כדי לראות את המוצרים.');
+  document.getElementById('seedBtn').textContent = 'הטעינה הושלמה ✓';
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FBF7F0">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="רשימת קניות">
+<title>עריכת רשימת קניות</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="topbar" id="topbar">
+  <div class="topbar-title">עריכת רשימת קניות<span class="dot">.</span></div>
+  <div class="topbar-actions">
+    <span class="workspace-badge" id="workspaceBadge"></span>
+    <span class="sync-dot" title="מסונכרן"></span>
+    <div class="nav-pill">
+      <a href="index.html">רשימת קניות</a>
+      <a href="edit.html" class="active">עריכת רשימה</a>
+      <a href="history.html">היסטוריה</a>
+      <a href="settings.html" id="settingsNavLink" style="display:none;">הגדרות</a>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <p class="edit-hint">סמנו ✓ ליד מוצרים שתרצו בקניה הקרובה, ולחצו "צור רשימת קניות" בתחתית.</p>
+</div>
+
+<div class="wrap">
+  <div class="search-box">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="searchInput" class="search-input" placeholder="חיפוש מוצר...">
+    <button class="search-clear" id="searchClear" style="display:none;" aria-label="ניקוי חיפוש">✕</button>
+  </div>
+</div>
+
+<div class="wrap" id="categoriesContainer">
+  <div class="loading-spinner"></div>
+</div>
+
+<div class="wrap" style="display:flex; gap:10px;">
+  <button class="add-category-btn" id="addCategoryBtn">+ הוספת מחלקה</button>
+  <button class="add-category-btn" id="resetListBtn" style="background:var(--rust); color:white;">↺ איפוס רשימה</button>
+</div>
+
+<div class="app-footer">A.L ייעוץ תכנון והקמת מערכות</div>
+
+<!-- Modal: add/edit category -->
+<div class="modal-backdrop" id="categoryModal">
+  <div class="modal-sheet">
+    <div class="modal-title" id="categoryModalTitle">מחלקה חדשה</div>
+    <div class="modal-row">
+      <input class="modal-input" id="categoryNameInput" placeholder="שם המחלקה" maxlength="30">
+    </div>
+    <div class="category-color-picker" id="emojiPicker"></div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" id="cancelCategory">ביטול</button>
+      <button class="modal-btn primary" id="saveCategory">שמירה</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: confirm delete category -->
+<div class="modal-backdrop" id="deleteCategoryModal">
+  <div class="modal-sheet">
+    <div class="modal-title">למחוק את המחלקה?</div>
+    <p style="color:var(--ink-soft); font-size:14px; line-height:1.6; margin:0 0 16px;" id="deleteCategoryText"></p>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" id="cancelDeleteCategory">ביטול</button>
+      <button class="modal-btn danger" id="confirmDeleteCategory">מחיקה</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sticky bar: create shopping list from checked items -->
+<div class="receipt-bar" id="createListBar" style="display:none;">
+  <div class="receipt-tear"></div>
+  <div class="receipt-content" style="padding-bottom:16px;">
+    <div class="receipt-cols">
+      <div class="receipt-col">
+        <div class="receipt-label">מוצרים מסומנים</div>
+        <div class="receipt-amount receipt-amount-secondary" id="checkedCount">0</div>
+      </div>
+      <div class="receipt-col">
+        <div class="receipt-label">צפי לקניה הבאה</div>
+        <div class="receipt-amount" id="checkedTotal">₪0.00</div>
+      </div>
+    </div>
+    <button class="finish-btn" id="createListBtn" disabled>צור רשימת קניות 🛒</button>
+  </div>
+</div>
+
+<!-- Modal: edit product (name, qty, price) -->
+<div class="modal-backdrop" id="editProductModal">
+  <div class="modal-sheet">
+    <div class="modal-title">עריכת מוצר</div>
+    <div class="modal-row">
+      <input class="modal-input" id="editProductName" placeholder="שם המוצר" maxlength="60">
+    </div>
+    <div class="modal-row" style="display:flex; gap:10px;">
+      <input class="modal-input" id="editProductQty" placeholder="כמות" inputmode="decimal" style="flex:1;">
+      <input class="modal-input" id="editProductPrice" placeholder="מחיר ₪" inputmode="decimal" style="flex:1;">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" id="cancelEditProduct">ביטול</button>
+      <button class="modal-btn primary" id="confirmEditProduct">שמירה</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: product image -->
+<div class="modal-backdrop" id="imageModal">
+  <div class="modal-sheet">
+    <div class="modal-title" id="imageModalTitle">תמונת מוצר</div>
+    <div class="image-preview-area" id="imagePreviewArea">
+      <span class="image-preview-placeholder" id="imagePreviewPlaceholder">📷</span>
+      <img id="imagePreview" style="display:none;" alt="תמונת המוצר">
+    </div>
+    <input type="file" id="imageFileInput" accept="image/*" style="display:none;">
+    <div class="modal-actions">
+      <button class="modal-btn secondary" id="closeImageModal">סגירה</button>
+      <button class="modal-btn danger" id="removeImageBtn" style="display:none;">הסרת תמונה</button>
+      <button class="modal-btn primary" id="chooseImageBtn">הוסף תמונה</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/supabase-client.js"></script>
+<script src="assets/workspaces.js"></script>
+<script src="assets/install-prompt.js"></script>
+<script src="assets/edit.js"></script>
+</body>
+</html>
